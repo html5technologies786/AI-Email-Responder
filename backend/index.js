@@ -25,7 +25,7 @@ app.use(
 app.options("*", cors());
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.json({msg:"AUTO REPLY GENERATOR API V1.0"});
 });
 
 app.use("/", langRouter);
