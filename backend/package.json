@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": "20.x"
+  },
   "name": "node_setup",
   "version": "1.0.0",
   "description": "",
