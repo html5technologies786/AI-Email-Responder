@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Select File</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        padding: 12px;
+        margin: 0;
+        width: 300px;
+        height: 180px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      h2 {
+        margin: 0 0 12px 0;
+        font-size: 1.25rem;
+        color: #1a1a1a;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+      }
+
+      .file-input {
+        margin: 8px 0;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      #fileInput {
+        width: 100%;
+        padding: 8px;
+        font-size: 0.9rem;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fafafa;
+        transition: border-color 0.2s ease;
+        box-sizing: border-box;
+      }
+
+      #fileInput:focus {
+        outline: none;
+        border-color: #0060df;
+        box-shadow: 0 0 4px rgba(0, 96, 223, 0.3);
+      }
+
+      .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        justify-content: flex-end;
+      }
+
+      button {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+
+      .primary {
+        background-color: #0060df;
+        color: white;
+      }
+
+      .primary:hover:not(:disabled) {
+        background-color: #004bb5;
+        transform: translateY(-1px);
+      }
+
+      .primary:disabled {
+        background-color: #bfdbfe;
+        cursor: not-allowed;
+        color: #6b7280;
+      }
+
+      .secondary {
+        background-color: #e5e7eb;
+        color: #374151;
+      }
+
+      .secondary:hover {
+        background-color: #d1d5db;
+        transform: translateY(-1px);
+      }
+
+      .file-info {
+        margin-top: 0;
+        font-size: 0.85rem;
+        color: #6b7280;
+        max-height: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        background: #f8fafc;
+        padding: 6px 8px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Select File to Upload</h2>
+    <div class="file-input">
+      <input type="file" id="fileInput" />
+      <div class="file-info" id="fileInfo"></div>
+    </div>
+    <div class="buttons">
+      <button id="saveButton" class="primary" disabled>Save</button>
+      <button id="cancelButton" class="secondary">Cancel</button>
+    </div>
+
+    <script src="file-picker.js"></script>
+  </body>
+</html>

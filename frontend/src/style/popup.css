@@ -1,0 +1,262 @@
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  padding: 12px;
+  min-width: 380px;
+  background-color: #ffffff;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+#title {
+  text-align: center;
+  font-size: 1.6em;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.date-group {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+label {
+  font-size: 0.9em;
+  color: #4a5568;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+input[type="date"] {
+  padding: 6px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.9em;
+  flex-grow: 1;
+  background: #fff;
+  transition: border-color 0.2s ease;
+}
+
+input[type="date"]:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 4px rgba(66, 153, 225, 0.3);
+}
+
+#btn-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1rem;
+  padding: 10px;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 0.85em;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1 1 auto;
+  font-weight: 500;
+}
+
+button.primary {
+  background-color: #4299e1;
+  color: white;
+}
+
+button.success {
+  background-color: #48bb78;
+  color: white;
+}
+
+button.danger {
+  background-color: #f56565;
+  color: white;
+}
+
+button:hover:not(:disabled) {
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#status {
+  margin-top: 1rem;
+  font-size: 0.85em;
+  color: #718096;
+  min-height: 16px;
+  text-align: center;
+}
+
+.sync-info {
+  width: 100%;
+  text-align: center;
+  font-size: 0.85em;
+  color: #4a5568;
+  padding: 8px 0;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+#sync-count {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.form-container.blur {
+  filter: blur(2px);
+  opacity: 0.9;
+}
+
+.p-error {
+  color: #ef4444;
+  font-size: 0.875em;
+  margin-left: 5rem;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.file-upload-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.file-selector-btn {
+  background-color: #e5e7eb;
+  width: 50px;
+  height: 50px;
+  color: #1f2937;
+  margin-left: 10px;
+  padding: 8px 16px;
+  border-radius: 100%;
+}
+
+.upload-btn {
+  background-color: #3b82f6;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+}
+
+/* .file-info {
+  margin-top: 6px;
+  font-size: 0.85em;
+  color: #6b7280;
+  width: 100%;
+} */
+
+.dataset-btn {
+  background-color: #3b82f6;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
+.modal-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.modal-form {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.count {
+  width: 50%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.count:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 4px rgba(66, 153, 225, 0.3);
+}
+
+.button-group {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.file-info {
+  margin-left: 10px;
+}
+
+.remove-file-btn {
+  background: transparent;
+  margin-left: 5px;
+  color: #ef4444;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.remove-file-btn:hover {
+  color: #dc2626;
+}
