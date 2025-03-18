@@ -37,7 +37,10 @@ function App() {
   const [file, setFile] = useState({
     size: null,
   });
+  const [loadingType, setLoadingType] = useState("uploadProgress");
   const [fileSelectionUrl, setFileSelectionUrl] = useState(null);
+  const [dataType, setDataType] = useState("dataset");
+  const backendUrl = "http://74.249.58.8:3002";
 
   const checkForSelectedFile = () => {
     browser.runtime
@@ -68,6 +71,8 @@ function App() {
   };
 
   const openFileSelector = () => {
+    setDataType("dataset");
+    setLoadingType("uploadProgress");
     if (fileSelectionUrl) {
       const screenWidth = window.screen.width;
       const screenHeight = window.screen.height;
@@ -101,6 +106,7 @@ function App() {
     }),
     onSubmit: async (values) => {
       setStatus("Processing emails...");
+      setLoadingType("loading");
       setLoading(true);
       await browser.runtime
         .sendMessage({
@@ -111,6 +117,7 @@ function App() {
         .then((response) => {
           console.log("[SUCCESS] Background script responded:", response);
           setLoading(false);
+          setLoadingType("UploadProgress");
           setStatus("Emails processed successfully! Check the Drafts folder.");
         })
         .catch((error) => {
@@ -189,6 +196,8 @@ function App() {
 
   const startReadingUserEmails = async () => {
     setModalIsOpen(false);
+    setDataType("writingStyle");
+    setLoadingType("uploadProgress");
     console.log("Starting to read users emails");
     setLoading(true);
     setStatus("Analyzing user writing style");
@@ -217,6 +226,7 @@ function App() {
 
   const clearUserEmailsHistory = () => {
     setStatus("Clearing User Email History");
+    setLoadingType("loading");
     setLoading(true);
     localStorage.removeItem("syncCount");
     browser.runtime
@@ -250,20 +260,18 @@ function App() {
   }
 
   async function removeDataset() {
-    console.log(process.env.VITE_PUBLIC_URL)
-    const response = await axios.post(
-      `${process.env.VITE_PUBLIC_URL}/api/remove-dataset`,
-      {
-        sessionId: localStorage.getItem("sessionId"),
-      }
-    );
-    console.log(response.data);
-    response.data;
+    setLoadingType("loading");
+    setLoading(true);
+    console.log("remove dataset");
+    const response = await axios.post(`${backendUrl}/api/remove-dataset`, {
+      sessionId: localStorage.getItem("sessionId"),
+    });
     setFile({
       name: null,
       size: null,
     });
     localStorage.removeItem("fileName");
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -320,13 +328,12 @@ function App() {
       });
   }, []);
 
-  useEffect(() => {
-    console.log(process.env);
+  useEffect(async () => {
     if (
       localStorage.getItem("sessionId") == null ||
       localStorage.getItem("sessionId") == ""
     ) {
-      const res = axios.post(`${process.env.VITE_PUBLIC_URL}/api/register-session`);
+      const res = await axios.post(`${backendUrl}/api/register-session`);
       localStorage.setItem("sessionId", res.data.sessionId);
     }
   }, []);
@@ -343,11 +350,16 @@ function App() {
       {loading && (
         <>
           <div id="loading-overlay">
-            <UploadProgress
-              sessionId={localStorage.getItem("sessionId")}
-              fileName={file.name}
-            />
-            {/* <Loading id="loader" /> */}
+            {loadingType == "uploadProgress" ? (
+              <UploadProgress
+                sessionId={localStorage.getItem("sessionId")}
+                fileName={file.name}
+                emailsToSync={emailsToSync}
+                dataType={dataType}
+              />
+            ) : (
+              <Loading id="loader" />
+            )}
           </div>
         </>
       )}

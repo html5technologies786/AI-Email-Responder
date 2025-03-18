@@ -7,6 +7,7 @@ let storedFile = null;
 let selectedFile = null;
 let pendingUploadData = null;
 let pendingFileSelection = false;
+let sessionId = localStorage.getItem("sessionId");
 let backendUrl = process.env.backend_url;
 
 async function generateAIResponse(emailBody, history) {
@@ -18,16 +19,13 @@ async function generateAIResponse(emailBody, history) {
       email: emailBody,
       sessionId: localStorage.getItem("sessionId"),
     };
-    const response = await fetch(
-      `${backendUrl}/api/process-emails`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
+    const response = await fetch(`${backendUrl}/api/process-emails`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
 
     console.log("[DEBUG] OpenAI API Response Status:", response.status);
 
@@ -582,6 +580,20 @@ async function uploadDataset(url) {
   return data.message;
 }
 
+async function clearEmailHistory() {
+  const response = await fetch(`${backendUrl}/api/clear-writing-style`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sessionId: sessionId,
+    }),
+  });
+  const data = response.status;
+  return data;
+}
+
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   let response;
   if (message.action === "startProcessing") {
@@ -636,6 +648,8 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     trainingEmails = [];
     console.log("Email History cleared");
     console.log(trainingEmails.length);
+    const status = await clearEmailHistory();
+    return status;
   } else if (message.action === "getPendingUploadData") {
     const data = selectedFile;
     sendResponse({ response: data });
