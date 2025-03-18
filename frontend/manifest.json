@@ -33,5 +33,10 @@
     "compose.save",
     "accountsFolders",
     "activeTab"
-  ]
+  ],
+  "browser_specific_settings": {
+    "env": {
+      "backend_url": "http://74.249.58.8:3002"
+    }
+  }
 }

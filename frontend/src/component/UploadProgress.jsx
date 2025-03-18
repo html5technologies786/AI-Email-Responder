@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
 import "./UploadProgress.css"; // External CSS file
 
-const UploadProgress = ({ sessionId }) => {
+const UploadProgress = ({ sessionId,fileName }) => {
   const [progress, setProgress] = useState(0);
-
+  console.log("Loading", sessionId);
   // Connect to WebSocket server
-  useWebSocket("ws://localhost:8080", {
+
+  useWebSocket(`ws://${process.env.VITE_SOCKET_URL}`, {
     onMessage: (event) => {
       const data = JSON.parse(event.data);
       if (data.sessionId === sessionId) {
@@ -17,6 +18,7 @@ const UploadProgress = ({ sessionId }) => {
 
   return (
     <div className="progress-container">
+      <span>{fileName}</span>
       <div className="progress-bar">
         <div className="progress-fill" style={{ width: `${progress}%` }}>
           <span className="progress-text"> {progress.toFixed(2)}%</span>

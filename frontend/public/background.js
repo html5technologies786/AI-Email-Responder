@@ -1,3 +1,4 @@
+const process = browser.runtime.getManifest().browser_specific_settings;
 let stopRequested = false;
 let isProcessing = false;
 let trainingEmails = [];
@@ -6,6 +7,7 @@ let storedFile = null;
 let selectedFile = null;
 let pendingUploadData = null;
 let pendingFileSelection = false;
+let backendUrl = process.env.backend_url;
 
 async function generateAIResponse(emailBody, history) {
   try {
@@ -17,8 +19,7 @@ async function generateAIResponse(emailBody, history) {
       sessionId: localStorage.getItem("sessionId"),
     };
     const response = await fetch(
-      // "https://thunderbird-ext-backend.vercel.app/api/process-emails",
-      "http://localhost:3001/api/process-emails",
+      `${backendUrl}/api/process-emails`,
       {
         method: "POST",
         headers: {
@@ -553,16 +554,13 @@ async function uploadWritingStyle() {
     writingStyle: trainingEmails,
     sessionId: localStorage.getItem("sessionId"),
   };
-  const response = await fetch(
-    "http://localhost:3001/api/upload-writing-style",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(obj),
-    }
-  );
+  const response = await fetch(`${backendUrl}/api/upload-writing-style`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(obj),
+  });
   const data = await response.json();
   return data.message;
 }
@@ -572,7 +570,7 @@ async function uploadDataset(url) {
     url: url,
     sessionId: localStorage.getItem("sessionId"),
   };
-  const response = await fetch("http://localhost:3001/api/upload-dataset", {
+  const response = await fetch(`${backendUrl}/api/upload-dataset`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

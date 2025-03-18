@@ -34,9 +34,10 @@ function App() {
   const [syncCount, setSyncCount] = useState(0);
   const [emailsToSync, setEmailsToSync] = useState(100);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState({
+    size: null,
+  });
   const [fileSelectionUrl, setFileSelectionUrl] = useState(null);
-  const [uploadedFileInfo, setUploadedFileInfo] = useState(null);
 
   const checkForSelectedFile = () => {
     browser.runtime
@@ -71,8 +72,8 @@ function App() {
       const screenWidth = window.screen.width;
       const screenHeight = window.screen.height;
 
-      const popupWidth = 330;
-      const popupHeight = 200;
+      const popupWidth = 400;
+      const popupHeight = 300;
 
       const left = (screenWidth - popupWidth) / 2;
       const top = (screenHeight - popupHeight) / 2;
@@ -137,7 +138,7 @@ function App() {
 
     setLoading(true);
     setStatus("Uploading file...");
-
+    const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
     try {
       const blob = await put(file.name, file, {
         access: "public",
@@ -159,7 +160,6 @@ function App() {
         });
       }
 
-      setUploadedFileInfo(fileInfo);
       // setFile(null);
       setStatus(`File uploaded successfully: ${file.name}`);
     } catch (error) {
@@ -242,20 +242,6 @@ function App() {
     setModalIsOpen(false);
   }
 
-  function getUploadedDataset() {
-    try {
-      const fileData = {
-        downloadUrl: localStorage.getItem("downloadUrl"),
-        url: localStorage.getItem("url"),
-        name: localStorage.getItem("fileName"),
-      };
-      console.log(fileData);
-    } catch (e) {
-      console.log(e);
-      throw e;
-    }
-  }
-
   function logSession() {
     console.log("Session ID: ", localStorage.getItem("sessionId"));
     console.log("File Name: ", localStorage.getItem("fileName"));
@@ -263,18 +249,31 @@ function App() {
     console.log("Download URL: ", localStorage.getItem("downloadUrl"));
   }
 
-  useEffect(() => {
-    // browser.runtime.sendMessage({ action: "getUploadedFile" }, (response) => {
-    //   if (response && response.fileName) {
-    //     setUploadedFileInfo({
-    //       fileName: response.fileName,
-    //       url: response.url,
-    //       downloadUrl: response.downloadUrl,
-    //     });
-    //   }
-    // });
+  async function removeDataset() {
+    console.log(process.env.VITE_PUBLIC_URL)
+    const response = await axios.post(
+      `${process.env.VITE_PUBLIC_URL}/api/remove-dataset`,
+      {
+        sessionId: localStorage.getItem("sessionId"),
+      }
+    );
+    console.log(response.data);
+    response.data;
+    setFile({
+      name: null,
+      size: null,
+    });
+    localStorage.removeItem("fileName");
+  }
 
+  useEffect(() => {
     const sync = localStorage.getItem("syncCount");
+    const uploadedFile = localStorage.getItem("fileName");
+    if (uploadedFile)
+      setFile({
+        name: uploadedFile,
+        size: null,
+      });
     if (sync) setSyncCount(sync);
   }, []);
 
@@ -321,17 +320,21 @@ function App() {
       });
   }, []);
 
-  useEffect(async () => {
-    if (!localStorage.getItem("sessionId")) {
-      const res = await axios.post(
-        "http://localhost:3001/api/register-session"
-      );
+  useEffect(() => {
+    console.log(process.env);
+    if (
+      localStorage.getItem("sessionId") == null ||
+      localStorage.getItem("sessionId") == ""
+    ) {
+      const res = axios.post(`${process.env.VITE_PUBLIC_URL}/api/register-session`);
       localStorage.setItem("sessionId", res.data.sessionId);
     }
   }, []);
 
   useEffect(() => {
-    handleUpload();
+    if (file.size != null) {
+      handleUpload();
+    }
   }, [file]);
 
   return (
@@ -340,7 +343,10 @@ function App() {
       {loading && (
         <>
           <div id="loading-overlay">
-            <UploadProgress sessionId={localStorage.getItem("sessionId")} />
+            <UploadProgress
+              sessionId={localStorage.getItem("sessionId")}
+              fileName={file.name}
+            />
             {/* <Loading id="loader" /> */}
           </div>
         </>
@@ -417,12 +423,13 @@ function App() {
           >
             +
           </button>
-          {file && (
+          {file.name != null && (
             <span className="file-info">
-              Selected: {file.name} ({formatFileSize(file.size)})
+              Selected: {file.name}{" "}
+              {file.size ? `(${formatFileSize(file.size)})` : ""}
               <button
                 type="button"
-                onClick={() => setFile(null)}
+                onClick={removeDataset}
                 className="remove-file-btn"
                 disabled={loading}
               >
