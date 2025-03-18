@@ -116,7 +116,7 @@ function App() {
           endDate: values.endDate,
         })
         .then((response) => {
-          console.log("[SUCCESS] Background script responded:", response);
+          // console.log("[SUCCESS] Background script responded:", response);
           setLoading(false);
           setLoadingType("UploadProgress");
           setStatus("Emails processed successfully! Check the Drafts folder.");
@@ -152,7 +152,7 @@ function App() {
         access: "public",
         token: blobToken,
       });
-      console.log(blob);
+      // console.log(blob);
       localStorage.setItem("fileName", blob.pathname);
       localStorage.setItem("url", blob.url);
       localStorage.setItem("downloadUrl", blob.downloadUrl);
@@ -179,7 +179,7 @@ function App() {
   };
 
   const stopProcessing = () => {
-    console.log("Stopping email processing...");
+    // console.log("Stopping email processing...");
     setStatus("Email processing stopped.");
     setLoading(true);
 
@@ -187,7 +187,7 @@ function App() {
       .sendMessage({ action: "stopProcessing" })
       .then((response) => {
         setLoading(false);
-        console.log("[SUCCESS] Background script responded:", response);
+        // console.log("[SUCCESS] Background script responded:", response);
       })
       .catch((error) => {
         setLoading(false);
@@ -199,7 +199,7 @@ function App() {
     setModalIsOpen(false);
     setDataType("writingStyle");
     setLoadingType("uploadProgress");
-    console.log("Starting to read users emails");
+    // console.log("Starting to read users emails");
     setLoading(true);
     setStatus("Analyzing user writing style");
 
@@ -210,10 +210,10 @@ function App() {
       });
 
       if (response) {
-        console.log("Response received:", response);
+        // console.log("Response received:", response);
         setStatus("User emails analyzed successfully");
         localStorage.setItem("syncCount", response.response);
-        console.log(response);
+        // console.log(response);
         setSyncCount(response.response);
       } else {
         setStatus("Unexpected error");
@@ -254,16 +254,16 @@ function App() {
   }
 
   function logSession() {
-    console.log("Session ID: ", localStorage.getItem("sessionId"));
-    console.log("File Name: ", localStorage.getItem("fileName"));
-    console.log("URL: ", localStorage.getItem("url"));
-    console.log("Download URL: ", localStorage.getItem("downloadUrl"));
+    // console.log("Session ID: ", localStorage.getItem("sessionId"));
+    // console.log("File Name: ", localStorage.getItem("fileName"));
+    // console.log("URL: ", localStorage.getItem("url"));
+    // console.log("Download URL: ", localStorage.getItem("downloadUrl"));
   }
 
   async function removeDataset() {
     setLoadingType("loading");
     setLoading(true);
-    console.log("remove dataset");
+    // console.log("remove dataset");
     const response = await axios.post(`${backendUrl}/api/remove-dataset`, {
       sessionId: localStorage.getItem("sessionId"),
     });
@@ -452,7 +452,7 @@ function App() {
           )}
         </div>
       </div>
-      <button onClick={logSession}>Log</button>
+      {/* <button onClick={logSession}>Log</button> */}
 
       {/* <button
         onClick={getUploadedDataset}

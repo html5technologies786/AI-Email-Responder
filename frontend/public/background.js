@@ -13,7 +13,7 @@ let backendUrl = process.env.backend_url;
 async function generateAIResponse(emailBody, history) {
   try {
     // let userEmails = await ReadContext();
-    console.log("[INFO] Sending request to OpenAI...");
+    // console.log("[INFO] Sending request to OpenAI...");
     const requestBody = {
       conversationHistory: history,
       email: emailBody,
@@ -27,10 +27,10 @@ async function generateAIResponse(emailBody, history) {
       body: JSON.stringify(requestBody),
     });
 
-    console.log("[DEBUG] OpenAI API Response Status:", response.status);
+    // console.log("[DEBUG] OpenAI API Response Status:", response.status);
 
     const data = await response.json();
-    console.log("[DEBUG] OpenAI API Response Data:", data);
+    // console.log("[DEBUG] OpenAI API Response Data:", data);
     return data;
   } catch (error) {
     console.error("[ERROR] Error generating AI response:", error);
@@ -41,9 +41,7 @@ async function generateAIResponse(emailBody, history) {
 const getRecentEmails = async (fromDate, toDate, stopRequested) => {
   const emails = [];
   try {
-    console.log(
-      `[INFO] Querying emails from: ${fromDate.toISOString()} to ${toDate.toISOString()}`
-    );
+    // console.log(`[INFO] Querying emails from: ${fromDate.toISOString()} to ${toDate.toISOString()}`);
 
     const accounts = await browser.accounts.list();
     if (accounts.length === 0) {
@@ -80,19 +78,19 @@ const getRecentEmails = async (fromDate, toDate, stopRequested) => {
 
     while (!stopRequested) {
       if (!page.messages || page.messages.length === 0) {
-        console.log(`[INFO] No messages found on page ${counter}.`);
+        // console.log(`[INFO] No messages found on page ${counter}.`);
         break;
       }
 
-      console.log(
-        `[INFO] Messages fetched from page ${counter}: ${page.messages.length}`
-      );
+      // console.log(
+      //   `[INFO] Messages fetched from page ${counter}: ${page.messages.length}`
+      // );
       counter += 1;
       for (const message of page.messages) {
         if (stopRequested) {
-          console.log(
-            "[INFO] Stop requested, aborting in the middle of page processing."
-          );
+          // console.log(
+          //   "[INFO] Stop requested, aborting in the middle of page processing."
+          // );
           return emails;
         }
 
@@ -108,15 +106,15 @@ const getRecentEmails = async (fromDate, toDate, stopRequested) => {
       }
 
       if (!page.id) {
-        console.log("[INFO] No more pages of messages.");
+        // console.log("[INFO] No more pages of messages.");
         break;
       }
 
-      console.log("[INFO] Fetching next page...");
+      // console.log("[INFO] Fetching next page...");
       page = await browser.messages.continueList(page.id);
     }
 
-    console.log(`[INFO] Total messages fetched: ${totalFetched}`);
+    // console.log(`[INFO] Total messages fetched: ${totalFetched}`);
     return emails;
   } catch (error) {
     console.error("[ERROR] Error fetching recent emails:", error);
@@ -132,9 +130,9 @@ function filterNoReplyEmails(emails) {
     );
   });
 
-  console.log(
-    `[INFO] Filtered emails (removed no-reply): ${filteredEmails.length}`
-  );
+  // console.log(
+  //   `[INFO] Filtered emails (removed no-reply): ${filteredEmails.length}`
+  // );
   return filteredEmails;
 }
 
@@ -160,9 +158,9 @@ async function fetchEmailBodies(emails) {
     try {
       // Check if stop was requested before fetching the body
       if (stopRequested) {
-        console.log(
-          "[INFO] Stop requested, aborting fetchEmailBodies process."
-        );
+        // console.log(
+        //   "[INFO] Stop requested, aborting fetchEmailBodies process."
+        // );
         break;
       }
       const fullMessage = await browser.messages.getFull(email.id);
@@ -173,38 +171,38 @@ async function fetchEmailBodies(emails) {
       email.body = "No Content";
     }
   }
-  console.log(`[INFO] Processed full bodies for ${emails.length} emails`);
+  // console.log(`[INFO] Processed full bodies for ${emails.length} emails`);
   return emails;
 }
 
 async function draftReplyEmails(emails) {
   for (const [index, email] of emails.entries()) {
     if (stopRequested) {
-      console.log("[INFO] Stop requested, aborting the drafting process.");
+      // console.log("[INFO] Stop requested, aborting the drafting process.");
       break;
     }
-    console.log("EMAIL: ", email);
+    // console.log("EMAIL: ", email);
     let conversationHistory = await getConversationHistory(
       email.email,
       email.title
     );
     try {
-      console.log(`[INFO] Drafting reply for email ${index + 1}`);
+      // console.log(`[INFO] Drafting reply for email ${index + 1}`);
       const aiResponse = await generateAIResponse(
         email.body,
         conversationHistory
       );
-      console.log(`AI response: ${aiResponse.answer + aiResponse.similarity}`);
-      const eBody = `${aiResponse.answer} \n ${aiResponse.similarity}`;
+      // // console.log(`AI response: ${aiResponse.answer + aiResponse.similarity}`);
+      const eBody = `${aiResponse.answer}`;
       const draftDetails = {
         to: [email.email],
         subject: `Re: ${email.title}`,
         body: `<html><body>${eBody.replace(/\n/g, "<br>")}</body></html>`,
       };
       if (stopRequested) {
-        console.log(
-          "[INFO] Stop requested after generating AI response, aborting."
-        );
+        // // console.log(
+        //   "[INFO] Stop requested after generating AI response, aborting."
+        // );
         break;
       }
       // await saveDraftInDraftsFolder(draftDetails);
@@ -213,10 +211,10 @@ async function draftReplyEmails(emails) {
       const saveResult = await browser.compose.saveMessage(composeTab.id, {
         mode: "draft",
       });
-      console.log(
-        `[INFO] Draft reply ${index + 1} saved successfully:`,
-        saveResult
-      );
+      // // console.log(
+      //   `[INFO] Draft reply ${index + 1} saved successfully:`,
+      //   saveResult
+      // );
 
       await browser.windows.remove(composeTab.windowId);
     } catch (error) {
@@ -227,7 +225,7 @@ async function draftReplyEmails(emails) {
     }
   }
 
-  console.log("[INFO] All replies drafted and windows closed.");
+  // // console.log("[INFO] All replies drafted and windows closed.");
 }
 
 async function saveDraftInDraftsFolder(draftDetails) {
@@ -248,7 +246,7 @@ async function saveDraftInDraftsFolder(draftDetails) {
 
   // Create the message in the Drafts folder
   const messageId = await browser.messages.create(accountId, message);
-  console.log("[INFO] Draft created directly:", messageId);
+  // // console.log("[INFO] Draft created directly:", messageId);
 }
 
 export async function processEmailsAndDraftReplies(
@@ -256,19 +254,19 @@ export async function processEmailsAndDraftReplies(
   endDateString
 ) {
   try {
-    console.log("[INFO] Starting email processing...");
+    // // console.log("[INFO] Starting email processing...");
 
     let fromDate = startDateString ? new Date(startDateString) : new Date();
     let toDate = endDateString ? new Date(endDateString) : new Date();
 
-    console.log(
-      `[INFO] Using fromDate: ${fromDate.toISOString()}, toDate: ${toDate.toISOString()}`
-    );
+    // // console.log(
+    //   `[INFO] Using fromDate: ${fromDate.toISOString()}, toDate: ${toDate.toISOString()}`
+    // );
     const emails = await getRecentEmails(fromDate, toDate, stopRequested);
     if (!emails) throw new Error("Failed to fetch emails.");
 
     if (emails.length === 0) {
-      console.log("[INFO] No emails found from the selected period.");
+      // // console.log("[INFO] No emails found from the selected period.");
       return;
     }
 
@@ -276,7 +274,7 @@ export async function processEmailsAndDraftReplies(
     if (!filteredEmails) throw new Error("Failed to filter emails.");
 
     if (filteredEmails.length === 0) {
-      console.log("[INFO] No non-no-reply emails found.");
+      // // console.log("[INFO] No non-no-reply emails found.");
       return;
     }
 
@@ -286,19 +284,19 @@ export async function processEmailsAndDraftReplies(
     );
 
     if (finalEmails.length === 0) {
-      console.log(
-        "[INFO] All remaining emails have no content, nothing to reply to."
-      );
+      // console.log(
+      //   "[INFO] All remaining emails have no content, nothing to reply to."
+      // );
       return;
     }
 
-    console.log(
-      `[INFO] Drafting replies for the emails with appropriate body : ${finalEmails.length}`
-    );
+    // console.log(
+    //   `[INFO] Drafting replies for the emails with appropriate body : ${finalEmails.length}`
+    // );
 
     await draftReplyEmails(finalEmails);
 
-    console.log("[INFO] Email processing completed.");
+    // console.log("[INFO] Email processing completed.");
   } catch (error) {
     console.error("[ERROR] An error occurred while processing emails:", error);
     throw error;
@@ -306,8 +304,8 @@ export async function processEmailsAndDraftReplies(
 }
 
 export async function getConversationHistory(email, subject) {
-  console.log("EMAIL FOR CONVERSATION:", email);
-  console.log("Subject FOR CONVERSATION:", subject);
+  // console.log("EMAIL FOR CONVERSATION:", email);
+  // console.log("Subject FOR CONVERSATION:", subject);
 
   let sentHistory = [];
   let receiveHistory = [];
@@ -385,11 +383,11 @@ export async function getConversationHistory(email, subject) {
     }
 
     if (!sentPage.id && !receivePage.id) {
-      console.log("[INFO] No more pages of messages.");
+      // console.log("[INFO] No more pages of messages.");
       break;
     }
 
-    console.log("[INFO] Fetching next page...");
+    // console.log("[INFO] Fetching next page...");
     sentPage = await browser.messages.continueList(sentPage.id);
     receivePage = await browser.messages.continueList(receivePage.id);
   }
@@ -399,7 +397,7 @@ export async function getConversationHistory(email, subject) {
     const body = await extractMessageBody(fullMessage);
     email.body = body;
   }
-  console.log("WHOLE HISTORY LENGTH:", wholeHistory.length);
+  // console.log("WHOLE HISTORY LENGTH:", wholeHistory.length);
   return wholeHistory;
 }
 
@@ -475,7 +473,7 @@ async function ReadContext() {
 
       // Get messages list with retry
       const messages = await retryOperation(getSentList);
-      console.log("INFO messages from sent inbox", messages);
+      // console.log("INFO messages from sent inbox", messages);
       // Process messages in smaller batches to avoid overwhelming the connection
       const batchSize = 5;
       for (let i = 0; i < messages.length; i += batchSize) {
@@ -542,7 +540,7 @@ async function saveDraftInvisibly(draftDetails) {
   const saveResult = await browser.compose.saveMessage(composeTab.id, {
     mode: "draft",
   });
-  console.log("[INFO] Draft saved:", saveResult);
+  // console.log("[INFO] Draft saved:", saveResult);
 
   await browser.windows.remove(composeTab.windowId);
 }
@@ -576,7 +574,7 @@ async function uploadDataset(url) {
     body: JSON.stringify(obj),
   });
   const data = await response.json();
-  console.log("BACKEND RESPONSE: ", data);
+  // console.log("BACKEND RESPONSE: ", data);
   return data.message;
 }
 
@@ -605,7 +603,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     await processEmailsAndDraftReplies(message.startDate, message.endDate)
       .then(() => {
-        console.log("[SUCCESS] Email processing completed.");
+        // console.log("[SUCCESS] Email processing completed.");
         isProcessing = false;
         // browser.runtime.sendMessage({ action: "processingCompleted" });
       })
@@ -622,9 +620,9 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     isProcessing = false;
     sendResponse({ status: "Stopped processing" });
   } else if (message.action == "analyzeUserEmails") {
-    console.log("Emails to Sync:", message.data);
+    // console.log("Emails to Sync:", message.data);
     emailsToSync = message.data;
-    console.log("Analyzing user email writing style");
+    // console.log("Analyzing user email writing style");
     await ReadContext()
       .then((res) => {
         if (!res || !Array.isArray(res)) {
@@ -646,8 +644,8 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     return { response, msg };
   } else if (message.action == "clearEmailsHistory") {
     trainingEmails = [];
-    console.log("Email History cleared");
-    console.log(trainingEmails.length);
+    // console.log("Email History cleared");
+    // console.log(trainingEmails.length);
     const status = await clearEmailHistory();
     return status;
   } else if (message.action === "getPendingUploadData") {
@@ -668,7 +666,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   //   return true;
   // }
   else if (message.action === "saveSelectedFileData") {
-    console.log("Background: ", message);
+    // console.log("Background: ", message);
     selectedFile = message.fileData;
     pendingFileSelection = true;
     sendResponse({ success: true });
@@ -682,7 +680,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       return Promise.resolve({ error: err.message });
     }
   } else if (message.action === "storeUploadedFile") {
-    console.log(message.url);
+    // console.log(message.url);
     await uploadDataset(message.url);
     return true;
   }
@@ -701,5 +699,5 @@ browser.windows.onRemoved.addListener((windowId) => {
   }
 });
 
-console.log("[DEBUG] Background script loaded and running...");
+// console.log("[DEBUG] Background script loaded and running...");
 // await getConversationHistory("saadsubuan@gmail.com");

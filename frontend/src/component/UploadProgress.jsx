@@ -6,7 +6,7 @@ const UploadProgress = ({ sessionId, fileName, dataType, emailsToSync }) => {
   const [progress, setProgress] = useState(0);
   const process = browser.runtime.getManifest().browser_specific_settings;
   const wsUrl = process.env.ws_url;
-  console.log("Loading", sessionId);
+  // console.log("Loading", sessionId);
   // Connect to WebSocket server
 
   useWebSocket(`${wsUrl}`, {
