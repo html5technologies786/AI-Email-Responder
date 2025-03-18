@@ -40,7 +40,8 @@ function App() {
   const [loadingType, setLoadingType] = useState("uploadProgress");
   const [fileSelectionUrl, setFileSelectionUrl] = useState(null);
   const [dataType, setDataType] = useState("dataset");
-  const backendUrl = "http://74.249.58.8:3002";
+  const process = browser.runtime.getManifest().browser_specific_settings;
+  const backendUrl = process.env.backend_url;
 
   const checkForSelectedFile = () => {
     browser.runtime
@@ -145,11 +146,11 @@ function App() {
 
     setLoading(true);
     setStatus("Uploading file...");
-    const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+    const blobToken = process.env.blob_token;
     try {
       const blob = await put(file.name, file, {
         access: "public",
-        token: "vercel_blob_rw_joemRGgjSl8Te6wj_bX4aZxznxztKC8LJ6FhOKrKrrdxi6p",
+        token: blobToken,
       });
       console.log(blob);
       localStorage.setItem("fileName", blob.pathname);

@@ -4,7 +4,8 @@ import "./UploadProgress.css"; // External CSS file
 
 const UploadProgress = ({ sessionId, fileName, dataType, emailsToSync }) => {
   const [progress, setProgress] = useState(0);
-  const wsUrl = "ws://74.249.58.8:8080";
+  const process = browser.runtime.getManifest().browser_specific_settings;
+  const wsUrl = process.env.ws_url;
   console.log("Loading", sessionId);
   // Connect to WebSocket server
 
