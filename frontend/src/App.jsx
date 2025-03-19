@@ -42,6 +42,7 @@ function App() {
   const [dataType, setDataType] = useState("dataset");
   const process = browser.runtime.getManifest().browser_specific_settings;
   const backendUrl = process.env.backend_url;
+  const sessionId = localStorage.getItem("sessionId")
 
   const checkForSelectedFile = () => {
     browser.runtime
