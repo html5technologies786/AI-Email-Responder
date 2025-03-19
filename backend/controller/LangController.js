@@ -348,16 +348,18 @@ export const uploadWritingStyle = async (req, res) => {
     }
 };
 
+
 export const uploadDataset = async (req, res) => {
     try {
-        const { url, sessionId } = req.body;
-        // const datasetFile = req.files;
-        const resp = await getFileData(url);
-        const dataset = resp.data;
+        if(!req.file){
+            return res.status(400).json({message:"No file found"});
+        }
+        const {  sessionId } = req.body;
+        const filePath = req.file.path;
+        const dataset = await fs.readFile(filePath,"utf-8");
         const processedDataset = await parseCSV(dataset);
         const pineconeApiKey = process.env.PINECONE_API_KEY;
         const pc = new Pinecone({ apiKey: pineconeApiKey });
-
         const embeddings = new OpenAIEmbeddings({
             model: "text-embedding-3-large",
         });
@@ -426,6 +428,7 @@ export const uploadDataset = async (req, res) => {
             .json({ message: "Uncatchable Error", error: error.message });
     }
 };
+
 
 
 export const removeDataset = async (req, res) => {

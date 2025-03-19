@@ -143,33 +143,22 @@ function App() {
     if (!file) {
       return;
     }
-
     setLoading(true);
     setStatus("Uploading file...");
-    const blobToken = process.env.blob_token;
     try {
-      const blob = await put(file.name, file, {
-        access: "public",
-        token: blobToken,
-      });
-      // console.log(blob);
-      localStorage.setItem("fileName", blob.pathname);
-      localStorage.setItem("url", blob.url);
-      localStorage.setItem("downloadUrl", blob.downloadUrl);
-      const fileInfo = {
-        fileName: blob.pathname,
-        url: blob.url,
-        downloadUrl: blob.downloadUrl,
-      };
-      if (fileInfo.url) {
-        await browser.runtime.sendMessage({
-          action: "storeUploadedFile",
-          ...fileInfo,
-        });
-      }
-
-      // setFile(null);
+      const formData = new FormData();
+      formData.append("datasetFile", file);
+      formData.append("sessionId",sessionId);
+      const response = await axios.post(
+        `${backendUrl}/api/upload-dataset`,
+        formData
+      );
+      if(response.status!=200){
+        setStatus("Error uploading file")
+      }else{
+      localStorage.setItem("fileName",file.name)
       setStatus(`File uploaded successfully: ${file.name}`);
+      }
     } catch (error) {
       console.error("Upload error:", error);
       setStatus("Error uploading file. See console for details.");
