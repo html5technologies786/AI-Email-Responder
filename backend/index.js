@@ -8,10 +8,6 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 
-// connection.connect(function (err) {
-//   if (err) throw err;
-//   console.log("Database connected successfully");
-// });
 dotenv.config();
 app.use(express.json());
 app.use(
@@ -25,7 +21,7 @@ app.use(
 app.options("*", cors());
 
 app.get("/", (req, res) => {
-  res.json({msg:"AUTO REPLY GENERATOR API V1.0"});
+  res.send("Hello World!");
 });
 
 app.use("/", langRouter);
