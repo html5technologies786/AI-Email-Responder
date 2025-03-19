@@ -36,9 +36,9 @@
   ],
   "browser_specific_settings": {
     "env": {
-      "backend_url": "http://",
-      "ws_url": "ws://",
-      "blob_token": ""
+      "backend_url": "http://74.249.58.8:3002",
+      "ws_url": "ws://74.249.58.8:8080",
+      "blob_token": "vercel_blob_rw_joemRGgjSl8Te6wj_bX4aZxznxztKC8LJ6FhOKrKrrdxi6p"
     }
   }
 }
