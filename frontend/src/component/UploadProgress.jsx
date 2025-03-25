@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import useWebSocket from "react-use-websocket";
 import "./UploadProgress.css"; // External CSS file
 
 const UploadProgress = ({ sessionId, fileName, dataType, emailsToSync }) => {
   const [progress, setProgress] = useState(0);
-  const process = browser.runtime.getManifest().browser_specific_settings;
-  const wsUrl = process.env.ws_url;
-  // console.log("Loading", sessionId);
-  // Connect to WebSocket server
-
-  useWebSocket(`${wsUrl}`, {
+    const [secondProgress,setSecondProgress] = useState(0);
+  const wsUrl = "ws://localhost:8080";
+  useWebSocket(wsUrl, {
     onMessage: (event) => {
       const data = JSON.parse(event.data);
       if (data.sessionId === sessionId) {
+          if(data.type == "embedding"){
         setProgress(data.progress);
+          }else if (data.type == "uploading"){
+              setSecondProgress(data.progress)
+          }else{
+              setProgress(data.progress)
+          }
       }
     },
   });
@@ -30,7 +33,19 @@ const UploadProgress = ({ sessionId, fileName, dataType, emailsToSync }) => {
           <span className="progress-text"> {progress.toFixed(2)}%</span>
         </div>
       </div>
-      {progress === 100 && <p className="success-text">Upload Completed ✅</p>}
+      {dataType == "dataset" ? (
+          <>
+          <span>Training AI on received data</span>
+                <div className="progress-bar">
+        <div className="progress-fill" style={{ width: `${secondProgress}%` }}>
+          <span className="progress-text"> {secondProgress.toFixed(2)}%</span>
+        </div>
+      </div>
+      {secondProgress=== 100 && <p className="success-text">Upload Completed ✅</p>}
+
+          </>
+      ):""}
+      {secondProgress=== 100 && <p className="success-text">Training Completed ✅</p>}
     </div>
   );
 };
