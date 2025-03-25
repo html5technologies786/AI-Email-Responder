@@ -3,9 +3,11 @@ import useWebSocket from "react-use-websocket";
 import "./UploadProgress.css"; // External CSS file
 
 const UploadProgress = ({ sessionId, fileName, dataType, emailsToSync }) => {
+  const process = browser.runtime.getManifest().browser_specific_settings;
+  const wsUrl = process.env.ws_url;
   const [progress, setProgress] = useState(0);
     const [secondProgress,setSecondProgress] = useState(0);
-  const wsUrl = "ws://localhost:8080";
+  // const wsUrl = "ws://localhost:8080";
   useWebSocket(wsUrl, {
     onMessage: (event) => {
       const data = JSON.parse(event.data);
